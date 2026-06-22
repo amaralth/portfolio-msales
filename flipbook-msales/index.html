@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>MSales Construtora - Apresentação Executiva</title>
+
+    <style>
+        /* 1. RESET BÁSICO */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        /* 2. FUNDO CRIATIVO: MALHA ARQUITETÔNICA (BLUEPRINT) ANIMADA */
+        body {
+            background-color: #050505;
+            /* Cria as linhas da grade dourada com opacidade de apenas 5% */
+            background-image: 
+                linear-gradient(rgba(229, 169, 60, 0.05) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(229, 169, 60, 0.05) 1px, transparent 1px);
+            background-size: 60px 60px; /* Tamanho dos quadrados da planta */
+            animation: moveGrid 30s linear infinite; /* Animação contínua */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            width: 100vw;
+            overflow: hidden;
+            font-family: Arial, sans-serif;
+        }
+
+        /* Faz a grade se mover infinitamente na diagonal */
+        @keyframes moveGrid {
+            0% { background-position: 0 0; }
+            100% { background-position: 60px 60px; }
+        }
+
+        /* 3. LUZ CENTRAL (Vinheta) */
+        .overlay-luz {
+            position: absolute;
+            top: 0; left: 0; width: 100vw; height: 100vh;
+            /* Escurece as bordas da tela e ilumina o centro atrás do livro */
+            background: radial-gradient(circle at 50% 50%, transparent 10%, #050505 80%);
+            pointer-events: none; /* Deixa os cliques passarem para o livro */
+            z-index: 1;
+        }
+
+        /* 4. O CONTAINER E O LIVRO */
+        .container {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            z-index: 2; /* Fica acima da luz e da grade */
+        }
+
+        .flip-book {
+            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.9), 0 0 0 1px rgba(229, 169, 60, 0.3);
+            display: none; 
+        }
+
+        .page {
+            background-color: #000;
+            border-right: 1px solid rgba(255, 255, 255, 0.03); 
+            overflow: hidden;
+        }
+
+        .page img {
+            width: 100%;
+            height: 100%;
+            object-fit: fill; 
+            pointer-events: none;
+            -webkit-user-drag: none;
+        }
+
+        /* 5. BOTÃO DE FECHAR (VOLTAR AO INÍCIO) */
+        #btn-voltar {
+            position: absolute;
+            bottom: 30px;
+            padding: 12px 24px;
+            background-color: rgba(229, 169, 60, 0.1);
+            color: #E5A93C;
+            border: 1px solid #E5A93C;
+            border-radius: 30px;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            backdrop-filter: blur(5px);
+            transition: all 0.4s ease;
+            opacity: 0; /* Começa invisível */
+            pointer-events: none; /* Desativado no início */
+            z-index: 10;
+        }
+
+        #btn-voltar:hover {
+            background-color: #E5A93C;
+            color: #000;
+            box-shadow: 0 0 20px rgba(229, 169, 60, 0.4);
+        }
+    </style>
+</head>
+<body>
+
+    <div class="overlay-luz"></div>
+
+    <div class="container">
+        <div class="flip-book" id="flipbook">
+            <div class="page"><img src="page-01.jpg" alt="Página 1"></div>
+            <div class="page"><img src="page-02.jpg" alt="Página 2"></div>
+            <div class="page"><img src="page-03.jpg" alt="Página 3"></div>
+            <div class="page"><img src="page-04.jpg" alt="Página 4"></div>
+            <div class="page"><img src="page-05.jpg" alt="Página 5"></div>
+            <div class="page"><img src="page-06.jpg" alt="Página 6"></div>
+            <div class="page"><img src="page-07.jpg" alt="Página 7"></div>
+            <div class="page"><img src="page-08.jpg" alt="Página 8"></div>
+            <div class="page"><img src="page-09.jpg" alt="Página 9"></div>
+            <div class="page"><img src="page-10.jpg" alt="Página 10"></div>
+            <div class="page"><img src="page-11.jpg" alt="Página 11"></div>
+        </div>
+    </div>
+
+    <button id="btn-voltar">⟲ Fechar Livro</button>
+
+    <script src="https://cdn.jsdelivr.net/npm/page-flip/dist/js/page-flip.browser.min.js"></script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const bookElement = document.getElementById('flipbook');
+            const btnVoltar = document.getElementById('btn-voltar');
+            
+            bookElement.style.display = 'block';
+
+            const pageFlip = new St.PageFlip(bookElement, {
+                width: 800,             
+                height: 1131,           
+                size: "stretch",        
+                minWidth: 315,          
+                maxWidth: 1000,         
+                minHeight: 420,         
+                maxHeight: 1414,        
+                maxShadowOpacity: 0.6,  
+                showCover: true,        
+                usePortrait: true       
+            });
+
+            pageFlip.loadFromHTML(document.querySelectorAll('.page'));
+
+            // LÓGICA DO BOTÃO: Escuta cada vez que a página vira
+            pageFlip.on('flip', (e) => {
+                // e.data é o número da página alvo. A página 11 é o index 10.
+                if (e.data >= 9) { 
+                    // Se chegou nas duas últimas páginas, mostra o botão
+                    btnVoltar.style.opacity = '1';
+                    btnVoltar.style.pointerEvents = 'auto';
+                } else {
+                    // Esconde o botão se voltar para o meio do livro
+                    btnVoltar.style.opacity = '0';
+                    btnVoltar.style.pointerEvents = 'none';
+                }
+            });
+
+            // LÓGICA DO CLIQUE: Quando clicar no botão, folheia até a capa (página 0)
+            btnVoltar.addEventListener('click', () => {
+                pageFlip.flip(0);
+                btnVoltar.style.opacity = '0';
+                btnVoltar.style.pointerEvents = 'none';
+            });
+        });
+    </script>
+
+</body>
+</html>
